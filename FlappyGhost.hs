@@ -1,6 +1,7 @@
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
 import Graphics.Gloss.Data.Point
+import System.Random
 
 
 -- makes a world of e cells
@@ -88,10 +89,10 @@ The function that changes the world after each iteration
 -}
 update f state = GameState {
     world = uHelper (world state) [] 0,
-    ghost = ghost state,
+    ghost = if (fade state == 0) then False else True,
     score = score state,
     alive = True,
-    fade = (fade state)-1 
+    fade = if (fade state > 0) then (fade state) - 1 else 0
 }
 
 uHelper [] ns x = "E"
@@ -108,7 +109,7 @@ drawing = Pictures [translate (-100) (-100) $ color blue $ rectangleSolid 80 200
                     translate (100) (-100) $ color white $ rectangleSolid 80 200]
 
 tempState = GameState {
-    world = "EEEEEEEEEEEEEEEWEEEEEEEEEELEEEEEWEEEEEEEEEWEEEEELEEEEWEE",
+    world = "EEEEEEELEEEEEEEEEEWEEEEEEEEEELEEEEEWEEEEEEEEEWEEEEELEEEEWEE",
     ghost = False,
     score = 0,
     alive = True,
@@ -157,4 +158,4 @@ main = do
     -- display window background (scale 0.2 0.2 sample)
     -- display window white (scale 0.2 0.2 trial)
     -- display window white (scale 0.2 0.2 land)
-    play window background 20 tempState (render pics) handleKeys update
+    play window background 10 tempState (render pics) handleKeys update
