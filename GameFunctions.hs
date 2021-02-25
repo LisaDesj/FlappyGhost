@@ -106,8 +106,8 @@ update f state =
         GameState {
         world = uHelper (world state) [] 0,
         ghost = if (fade state == 0) then False else True,
-        score = checkScore (world state) 0 (score state),
-        alive = checkAlive (world state) (ghost state) 0,
+        score = updateScore (world state) 0 (score state),
+        alive = updateAlive (world state) (ghost state) 0,
         fade = if (fade state > 0) then (fade state) - 1 else 0
         }
     else
@@ -118,20 +118,20 @@ uHelper (h:t) ns x
     |x == 0 = uHelper t ns (x+1)
     |otherwise = h:(uHelper t ns x)
 
-checkAlive::String -> Bool -> Int -> Bool
-checkAlive [] ghost count = True
-checkAlive (h:t) ghost count
+updateAlive::String -> Bool -> Int -> Bool
+updateAlive [] ghost count = True
+updateAlive (h:t) ghost count
     | count > 7 && count < 15 && h == 'L' && ghost = False
-    | count < 8 = True && (checkAlive t ghost (count+1))
+    | count < 8 = True && (updateAlive t ghost (count+1))
     | count > 14 = True
-    | h == 'W' && ghost = True && (checkAlive t ghost (count+1))
+    | h == 'W' && ghost = True && (updateAlive t ghost (count+1))
     | h == 'W' = False
     -- | h == 'L' && ghost = False
-    | otherwise = True && (checkAlive t ghost (count+1))
+    | otherwise = True && (updateAlive t ghost (count+1))
 
-checkScore::String -> Int -> Int -> Int
-checkScore [] count score = score
-checkScore (h:t) count score
-    |count < 13 = checkScore t (count+1) score
+updateScore::String -> Int -> Int -> Int
+updateScore [] count score = score
+updateScore (h:t) count score
+    |count < 13 = updateScore t (count+1) score
     |count == 13 && h == 'W' = score + 1
     |otherwise = score
