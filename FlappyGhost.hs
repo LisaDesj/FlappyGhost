@@ -1,43 +1,57 @@
-module FlappyGhost where
+import Graphics.Gloss
+import Data.ByteString as B
 
 
--- State
- {- 
- State is a struct consist of:
- - score (an integer, # number of walls passed)
- - alive (a boolean)
- - map
- -}
+-- Initialize an empty world
+-- world is an array of cells
+-- parameter is the number of cells
+-- a cell is a character that's either
+-- E: empty, W: wall, L: light
+makeWorld::int -> String -> Stinrg
+makeWorld 0 s = s;
+makeWorld x s = makeWorld x-1 'E':S
 
 
+-- nextWorld
+{- 
+make the next frame of the world
+reads the old world to see what is permited to add as the next cell
+(random number generator?)
+-}
+-- nextWorld:: String -> String
 
-
--- Ghost
 {-
-Ghost is a struct of:
-- mode (a bool, either invisble or not)
+GameState is a struct of world, ghost, score, alive
+ghost is whether the ghost is invisible or not
+score is the number of walls passes
+alive is whether not not the palyer is alive
+-}
+data GameState = GameState {
+    world::String,
+    ghost::Bool,
+    score::Int,
+    alive::Bool
+}
+
+window :: Display
+window = InWindow "FlappyGhost" (800, 400) (50, 50)
+
+background :: Color
+background = black
+
+
+{-
+Render, reders the game\\
+by reading the state\\
+display:
+- the map
+- score
+- (menu? restard button when player dies?)
 -}
 
-
-
--- map
-{-
-the map is 10 (or some other number) vertical cells
-the ghost is in the first cell
-a cell is either blank, wall, or light
-
-(Note*
-have some empepty cells between wall and light,
-to give player time to press)
-
-(use random number generator?
-to decide number of cells between walls, lights)
--}
-
-
-
--- Game [Action] -> ghost -> state -> state
-{-
-game takes in an action, which updates ghost
-and update state based on ghost's mode and the map
--}
+main :: IO ()
+main = do
+    landPic <- loadBMP "FlappyGhost/land.png"
+    let land = scale 800 400 landPic
+    
+    display window background landPic
