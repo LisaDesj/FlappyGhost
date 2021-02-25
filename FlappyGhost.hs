@@ -1,5 +1,5 @@
 import Graphics.Gloss
-import Graphics.Gloss.Interface.Pure.Game
+import Graphics.Gloss.Interface.IO.Interact
 
 
 -- Initialize an empty world
@@ -72,12 +72,9 @@ handleKeys
 takes the keystroke, the state, and updates the state
 -}
 -- handleKeys Event -> GameState -> GameState
-handleKeys (EventKey k ks _ _) gs
-    | SpecialKey KeySpace <- k
-      , Up <- ks  
-        = gs { ghost = not (ghost gs) }
+handleKeys (EventKey k _ _ _) gs
+    | SpecialKey KeyDown <- k   = gs{ ghost = False }
     | otherwise = gs
-handleKeys (EventMotion _) gs = gs
 --TO DO: Add timer
 
 
@@ -143,6 +140,7 @@ main = do
     ghost_lit <- loadBMP "images/ghost_light.bmp"
     ghost_invis <- loadBMP "images/ghost_invis.bmp"
     sample <- loadBMP "images/sample.bmp"
+    trial <- loadBMP "images/trial.bmp"
     let wd = makeWorld 10 ""
 
     let state = GameState {
@@ -165,5 +163,5 @@ main = do
     -- play window background 10 tempState tempRender tempHK tempUpdate
 
     -- display window background (scale 0.2 0.2 sample)
-    display window white (scale 2 2 ghost_lit)
+    display window white (scale 2 2 trial)
     -- play window background 50 tempState (render pics) tempHK tempUpdate
