@@ -1,5 +1,4 @@
 import Graphics.Gloss
-import Data.ByteString as B
 
 
 -- Initialize an empty world
@@ -7,9 +6,9 @@ import Data.ByteString as B
 -- parameter is the number of cells
 -- a cell is a character that's either
 -- E: empty, W: wall, L: light
-makeWorld::int -> String -> Stinrg
+makeWorld::Int -> String -> String
 makeWorld 0 s = s;
-makeWorld x s = makeWorld x-1 'E':S
+makeWorld x s = makeWorld (x-1) ('E':s)
 
 
 -- nextWorld
@@ -40,6 +39,11 @@ background :: Color
 background = black
 
 
+-- temp place holder
+drawing :: Picture
+drawing = circle 80
+
+
 {-
 Render, reders the game\\
 by reading the state\\
@@ -50,8 +54,6 @@ display:
 -}
 
 main :: IO ()
-main = do
-    landPic <- loadBMP "FlappyGhost/land.png"
-    let land = scale 800 400 landPic
-    
-    display window background landPic
+main = do {
+    display window background drawing
+}
