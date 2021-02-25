@@ -39,16 +39,12 @@ window = InWindow "FlappyGhost" (1000, 504) (50, 50)
 background :: Color
 background = black
 
-
-
-
 gameOver::Picture
 gameOver = translate (-300) 0 $ color white $ text "GameOver"
 
-{-
-Render
-takes the state and make the viasuals
--}
+
+-- Render
+-- takes the state and make the viasuals
 render:: Pics -> GameState -> Picture
 render pics state
     | (alive state) && (ghost state) = 
@@ -70,10 +66,9 @@ renderHelper pics ps (h:t) x
     |otherwise = renderHelper pics ps t (x+1)
 
 
-{-
-handleKeys
-takes the keystroke, the state, and updates the state
--}
+
+--handleKeys
+--takes the keystroke, the state, and updates the state
 -- handleKeys Event -> GameState -> GameState
 handleKeys (EventKey k _ _ _) gs
     | SpecialKey KeyDown <- k   = gs{ ghost = not (ghost gs) }
