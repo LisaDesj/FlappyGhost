@@ -1,5 +1,5 @@
 import Graphics.Gloss
-import Graphics.Gloss.Interface.Pure.Game
+import Graphics.Gloss.Interface.IO.Interact
 
 
 -- Initialize an empty world
@@ -45,12 +45,9 @@ handleKeys
 takes the keystroke, the state, and updates the state
 -}
 -- handleKeys Event -> GameState -> GameState
-handleKeys (EventKey k ks _ _) gs
-    | SpecialKey KeySpace <- k
-      , Up <- ks  
-        = gs { ghost = not (ghost gs) }
+handleKeys (EventKey k _ _ _) gs
+    | SpecialKey KeyDown <- k   = gs{ ghost = False }
     | otherwise = gs
-handleKeys (EventMotion _) gs = gs
 --TO DO: Add timer
 
 
