@@ -50,20 +50,21 @@ takes the state and make the viasuals
 render:: Pics -> GameState -> Picture
 render pics state
     | (alive state) && (ghost state) = 
-        Pictures (renderHelper pics [(translate (-350) (-100) (ghost_invis pics))] (world state) 0)
+        Pictures (renderHelper pics [(translate (-350) (-100) (ghost_invis pics))] (world state) (-1))
     | (alive state) =
-        Pictures (renderHelper pics [(translate (-350) (-100) (ghost_norm pics))] (world state) 0)
-    | otherwise = gameOver
+        Pictures (renderHelper pics [(translate (-350) (-100) (ghost_norm pics))] (world state) (-1))
+    | otherwise = gameOver     
 
-        
+
 
 renderHelper:: Pics -> [Picture] -> String -> Float -> [Picture]
 renderHelper pics ps [] x = ps
 renderHelper pics ps (h:t) x
+    | x == -1 = (translate 0 (-150) (land pics)):(renderHelper pics ps t (x+1))
     | h == 'W' = 
         (translate (-400 + (x * 50)) (-100) (wall pics)):(renderHelper pics ps t (x+1))
     | h == 'L' =
-         (translate (-400 + (x * 50)) (-100) (lamp pics)):(renderHelper pics ps t (x+1))
+         (translate (-400 + (x * 50)) 0 (lamp pics)):(renderHelper pics ps t (x+1))
     |otherwise = renderHelper pics ps t (x+1)
 
 
@@ -118,7 +119,7 @@ tuHelper (h:t) ns x
     |otherwise = h:(tuHelper t ns x)
 
 tempState = GameState {
-    world = "EEEEEEEEEW",
+    world = "EEEEEEWEEELEEEW",
     ghost = True,
     score = 0,
     alive = True
@@ -133,14 +134,14 @@ main is where all the functions are put together and used via gloss
 main :: IO ()
 main = do
     -- load all the bmp images here
-    land <- loadBMP "images/land01.bmp"
-    wall <- loadBMP "images/wall01.bmp"
-    light <- loadBMP "images/light01.bmp"
+    land <- loadBMP "images/land.bmp"
+    wall <- loadBMP "images/wall.bmp"
+    light <- loadBMP "images/light.bmp"
     ghost_norm <- loadBMP "images/ghost.bmp"
     ghost_lit <- loadBMP "images/ghost_light.bmp"
     ghost_invis <- loadBMP "images/ghost_invis.bmp"
     -- sample <- loadBMP "images/sample.bmp"
-    trial <- loadBMP "images/trial.bmp"
+    -- trial <- loadBMP "images/trial.bmp"
     let wd = makeWorld 10 ""
 
     let state = GameState {
@@ -150,12 +151,12 @@ main = do
         alive = True
     }
     let pics = Pics {
-        land = scale 0.2 0.1 land,
-        wall = scale 0.2 0.2 wall,
-        lamp = scale 0.2 0.2 light,
-        ghost_norm = scale 0.1 0.1 ghost_norm,
-        ghost_lit = scale 0.1 0.1 ghost_lit,
-        ghost_invis = scale 0.1 0.1 ghost_invis
+        land = scale 0.3 0.2 land,
+        wall = scale 0.2 0.5 wall,
+        lamp = scale 0.9 0.9 light,
+        ghost_norm = scale 0.75 0.75 ghost_norm,
+        ghost_lit = scale 0.5 0.5 ghost_lit,
+        ghost_invis = scale 0.5 0.5 ghost_invis
     }
     -- play window background 30 state render handleKeys update
 
@@ -164,5 +165,5 @@ main = do
 
     -- display window background (scale 0.2 0.2 sample)
     -- display window white (scale 0.2 0.2 trial)
-    display window white (scale 0.2 0.2 land)
-    -- play window background 1 tempState (render pics) tempHK tempUpdate
+    -- display window white (scale 0.2 0.2 land)
+    play window background 10 tempState (render pics) tempHK tempUpdate
