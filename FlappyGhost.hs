@@ -105,7 +105,7 @@ update f state =
         GameState {
         world = uHelper (world state) [] 0,
         ghost = if (fade state == 0) then False else True,
-        score = score state,
+        score = checkScore (world state) 0 (score state),
         alive = checkAlive (world state) (ghost state) 0,
         fade = if (fade state > 0) then (fade state) - 1 else 0
         }
@@ -124,8 +124,15 @@ checkAlive (h:t) ghost count
     | count > 16 = True
     | h == 'W' && ghost = True && (checkAlive t ghost (count+1))
     | h == 'W' = False
-    | h == 'L' && ghost = False
+    | count > 12 && count < 15 && h == 'L' && ghost = False
     | otherwise = True && (checkAlive t ghost (count+1))
+
+checkScore::String -> Int -> Int -> Int
+checkScore [] count score = score
+checkScore (h:t) count score
+    |count < 13 = checkScore t (count+1) score
+    |count == 13 && h == 'W' = score + 1
+    |otherwise = score
 
 
 -- =======================
@@ -136,7 +143,7 @@ drawing = Pictures [translate (-100) (-100) $ color blue $ rectangleSolid 80 200
                     translate (100) (-100) $ color white $ rectangleSolid 80 200]
 
 tempState = GameState {
-    world = "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEWEEEEEEEEEEEEELEEEEEEEEEEEEEEEEEEEEEEEEEE",
+    world = "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEWEEEEEEEEEEEEELEEEEEEEEEEEEEWEEEEEEEEEEEE",
     ghost = False,
     score = 0,
     alive = True,
