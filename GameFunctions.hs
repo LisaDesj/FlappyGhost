@@ -66,7 +66,7 @@ renderGame:: Pics -> GameState -> Picture -> Picture
 renderGame pics state ghost = 
     Pictures (renderHelper 
                 pics 
-                ((translate 450 200 $ scale 0.3 0.3 $ color white $ text $ show (score state)):
+                ((translate 400 200 $ scale 0.3 0.3 $ color white $ text $ show (score state)):
                     [ghost])
                 (world state) 
                 (-1))
@@ -121,11 +121,12 @@ uHelper (h:t) ns x
 checkAlive::String -> Bool -> Int -> Bool
 checkAlive [] ghost count = True
 checkAlive (h:t) ghost count
-    | count < 11 = True && (checkAlive t ghost (count+1))
-    | count > 16 = True
+    | count > 7 && count < 15 && h == 'L' && ghost = False
+    | count < 8 = True && (checkAlive t ghost (count+1))
+    | count > 14 = True
     | h == 'W' && ghost = True && (checkAlive t ghost (count+1))
     | h == 'W' = False
-    | count > 12 && count < 15 && h == 'L' && ghost = False
+    -- | h == 'L' && ghost = False
     | otherwise = True && (checkAlive t ghost (count+1))
 
 checkScore::String -> Int -> Int -> Int

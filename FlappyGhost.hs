@@ -63,4 +63,4 @@ main = do
     -- display window background (scale 0.2 0.2 sample)
     -- display window white (scale 0.2 0.2 trial)
     -- display window background (translate 450 200 $ scale 0.3 0.3 $ color white $ text $ show (score state))
-    play window background 10 tempState (render pics) handleKeys update
+    play window background 20 tempState (render pics) handleKeys update
