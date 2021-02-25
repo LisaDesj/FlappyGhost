@@ -45,15 +45,38 @@ drawing = circle 80
 
 
 {-
-Render, reders the game\\
-by reading the state\\
-display:
-- the map
-- score
-- (menu? restard button when player dies?)
+Render
+takes the state and make the viasuals
+-}
+-- render:: _____ -> Picture
+
+
+{-
+handleKeys
+takes the keystroke, the state, and updates the state
+-}
+-- handleKeys Event -> GameState -> GameState
+
+
+
+-- update
+{-
+The function that changes the world after each iteration
 -}
 
+
+{-
+main is where all the functions are put together and used via gloss
+-}
 main :: IO ()
-main = do {
-    display window background drawing
-}
+main = do
+    -- load all the bmp images here
+    let wd = makeWorld 10 ""
+    let state = GameState {
+        world = wd,
+        ghost = True,
+        score = 0,
+        alive = True
+   }
+
+    -- play window background 30 state render handleKeys update
