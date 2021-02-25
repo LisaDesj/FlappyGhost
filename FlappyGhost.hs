@@ -1,5 +1,6 @@
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
+import Graphics.Gloss.Data.Point
 
 
 -- makes a world of e cells
@@ -9,12 +10,13 @@ makeWorld::Int -> String -> String
 makeWorld 0 s = s;
 makeWorld x s = makeWorld (x-1) ('E':s)
 
+
 -- Structs
 {-
 GameState is a struct of world, ghost, score, alive
-ghost is whether the ghost is invisible or not
+ghost is whether the ghost is invisible or not (Invisible = True, Visible = False)
 score is the number of walls passes
-alive is whether not not the palyer is alive
+alive is whether not not the player is alive
 -}
 data GameState = GameState {
     world::String,
@@ -23,6 +25,7 @@ data GameState = GameState {
     alive::Bool,
     fade::Int
 }
+
 
 -- pics is just so images can be accessed easier in render
 data Pics = Pics{
@@ -45,20 +48,20 @@ gameOver = translate (-300) 0 $ color white $ text "GameOver"
 
 
 -- Render
--- takes the state and make the viasuals
+-- takes the state and make the visuals
 render:: Pics -> GameState -> Picture
 render pics state
     | (alive state) && (ghost state) = 
-        Pictures (renderHelper pics [(translate (-350) (-100) (ghost_invis pics))] (world state) (-1))
+        Pictures (renderHelper pics [(translate (0) (0) (ghost_invis pics))] (world state) (-1))
     | (alive state) =
-        Pictures (renderHelper pics [(translate (-350) (-100) (ghost_norm pics))] (world state) (-1))
+        Pictures (renderHelper pics [(translate (0) (0) (ghost_norm pics))] (world state) (-1))
     | otherwise = gameOver     
 
 
 
-renderHelper:: Pics -> [Picture] -> String -> Float -> [Picture]
+--renderHelper:: Pics -> [Picture] -> String -> Float -> [Picture]
 renderHelper pics ps [] x = ps
-renderHelper pics ps (h:t) x
+renderHelper pics ps (h:t) x 
     | x == -1 = (land pics):(renderHelper pics ps t (x+1))
     | h == 'W' = 
         (translate (-400 + (x * 50)) 0 (wall pics)):(renderHelper pics ps t (x+1))
@@ -67,14 +70,15 @@ renderHelper pics ps (h:t) x
     |otherwise = renderHelper pics ps t (x+1)
 
 
-
---handleKeys
---takes the keystroke, the state, and updates the state
+{-
+handleKeys
+takes the keystroke, the state, and updates the state
+-}
 -- handleKeys Event -> GameState -> GameState
-handleKeys (EventKey k _ _ _) gs
-    | SpecialKey KeyDown <- k   = gs{ ghost = not (ghost gs) }
+handleKeys (EventKey k ks _ _) gs
+    | SpecialKey KeySpace <- k = gs{ ghost = not (ghost gs), fade = 2}
     | otherwise = gs
---TO DO: Add timer
+handleKeys _ gs = gs
 
 
 
@@ -82,6 +86,19 @@ handleKeys (EventKey k _ _ _) gs
 {-
 The function that changes the world after each iteration
 -}
+update f state = GameState {
+    world = uHelper (world state) [] 0,
+    ghost = ghost state,
+    score = score state,
+    alive = True,
+    fade = (fade state)-1 
+}
+
+uHelper [] ns x = "E"
+uHelper (h:t) ns x
+    |x == 0 = uHelper t ns (x+1)
+    |otherwise = h:(uHelper t ns x)
+
 
 -- =======================
 -- temp place holders
@@ -105,10 +122,10 @@ tempHK event state = state
 
 tempUpdate f state = GameState {
     world = tuHelper (world state) [] 0,
-    ghost = True,
+    ghost = False,
     score = 0,
     alive = True,
-    fade = 0
+    fade = 0 
 }
     
 
@@ -118,8 +135,8 @@ tuHelper (h:t) ns x
     |otherwise = h:(tuHelper t ns x)
 
 tempState = GameState {
-    world = "EEEEEEWEEELEEEW",
-    ghost = True,
+    world = "EEEEEEEEEEEEEEEWEEEEEEEEEELEEEEEWEEEEEEEEEWEEEEELEEEEWEE",
+    ghost = False,
     score = 0,
     alive = True,
     fade = 0
@@ -146,11 +163,11 @@ main = do
 
     let state = GameState {
         world = wd,
-        ghost = True,
+        ghost = False,
         score = 0,
         alive = True,
         fade = 0
-    }
+    } 
     let pics = Pics {
         land = scale 1 1.5 land,
         wall = scale 1 1.5 wall,
@@ -167,4 +184,4 @@ main = do
     -- display window background (scale 0.2 0.2 sample)
     -- display window white (scale 0.2 0.2 trial)
     -- display window white (scale 0.2 0.2 land)
-    play window background 8 tempState (render pics) tempHK tempUpdate
+    play window background 8 tempState (render pics) handleKeys update
