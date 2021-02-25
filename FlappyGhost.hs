@@ -139,7 +139,7 @@ main = do
     ghost_norm <- loadBMP "images/ghost.bmp"
     ghost_lit <- loadBMP "images/ghost_light.bmp"
     ghost_invis <- loadBMP "images/ghost_invis.bmp"
-    sample <- loadBMP "images/sample.bmp"
+    -- sample <- loadBMP "images/sample.bmp"
     trial <- loadBMP "images/trial.bmp"
     let wd = makeWorld 10 ""
 
@@ -150,12 +150,12 @@ main = do
         alive = True
     }
     let pics = Pics {
-        land = scale 800 80 land,
-        wall = scale 50 300 wall,
-        lamp = scale 50 80 light,
-        ghost_norm = scale 40 40 ghost_norm,
-        ghost_lit = scale 40 40 ghost_lit,
-        ghost_invis = scale 40 40 ghost_invis
+        land = scale 0.2 0.1 land,
+        wall = scale 0.2 0.2 wall,
+        lamp = scale 0.2 0.2 light,
+        ghost_norm = scale 0.1 0.1 ghost_norm,
+        ghost_lit = scale 0.1 0.1 ghost_lit,
+        ghost_invis = scale 0.1 0.1 ghost_invis
     }
     -- play window background 30 state render handleKeys update
 
@@ -163,5 +163,6 @@ main = do
     -- play window background 10 tempState tempRender tempHK tempUpdate
 
     -- display window background (scale 0.2 0.2 sample)
-    display window white (scale 2 2 trial)
-    -- play window background 50 tempState (render pics) tempHK tempUpdate
+    -- display window white (scale 0.2 0.2 trial)
+    display window white (scale 0.2 0.2 land)
+    -- play window background 1 tempState (render pics) tempHK tempUpdate
