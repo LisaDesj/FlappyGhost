@@ -20,7 +20,8 @@ data GameState = GameState {
     world::String,
     ghost::Bool,
     score::Int,
-    alive::Bool
+    alive::Bool,
+    fade::Int
 }
 
 -- pics is just so images can be accessed easier in render
@@ -106,7 +107,8 @@ tempUpdate f state = GameState {
     world = tuHelper (world state) [] 0,
     ghost = True,
     score = 0,
-    alive = True
+    alive = True,
+    fade = 0
 }
     
 
@@ -119,7 +121,8 @@ tempState = GameState {
     world = "EEEEEEWEEELEEEW",
     ghost = True,
     score = 0,
-    alive = True
+    alive = True,
+    fade = 0
 }
 -- ========================
 
@@ -145,7 +148,8 @@ main = do
         world = wd,
         ghost = True,
         score = 0,
-        alive = True
+        alive = True,
+        fade = 0
     }
     let pics = Pics {
         land = scale 1 1.5 land,
