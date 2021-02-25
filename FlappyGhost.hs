@@ -53,21 +53,28 @@ gameOver = translate (-300) 0 $ color white $ text "GameOver"
 render:: Pics -> GameState -> Picture
 render pics state
     | (alive state) && (ghost state) = 
-        Pictures (renderHelper pics [(translate (0) (0) (ghost_invis pics))] (world state) (-1))
+        renderGame pics state (ghost_invis pics)
     | (alive state) =
-        Pictures (renderHelper pics [(translate (0) (0) (ghost_norm pics))] (world state) (-1))
+        renderGame pics state (ghost_norm pics)
     | otherwise = gameOver     
 
+renderGame:: Pics -> GameState -> Picture -> Picture
+renderGame pics state ghost = 
+    Pictures (renderHelper 
+                pics 
+                ((translate 450 200 $ scale 0.3 0.3 $ color white $ text $ show (score state)):
+                    [ghost])
+                (world state) 
+                (-1))
 
-
---renderHelper:: Pics -> [Picture] -> String -> Float -> [Picture]
+renderHelper:: Pics -> [Picture] -> String -> Float -> [Picture]
 renderHelper pics ps [] x = ps
 renderHelper pics ps (h:t) x 
     | x == -1 = (land pics):(renderHelper pics ps t (x+1))
     | h == 'W' = 
-        (translate (-400 + (x * 50)) 0 (wall pics)):(renderHelper pics ps t (x+1))
+        (translate (-400 + (x * 40)) 0 (wall pics)):(renderHelper pics ps t (x+1))
     | h == 'L' =
-         (translate (-400 + (x * 50)) 0 (lamp pics)):(renderHelper pics ps t (x+1))
+         (translate (-400 + (x * 40)) 0 (lamp pics)):(renderHelper pics ps t (x+1))
     |otherwise = renderHelper pics ps t (x+1)
 
 
@@ -146,9 +153,9 @@ main = do
         land = scale 1 1.5 land,
         wall = scale 1 1.5 wall,
         lamp = scale 1 1.5 light,
-        ghost_norm = ghost_norm,
+        ghost_norm = translate (-100) 0 ghost_norm,
         ghost_lit = ghost_lit,
-        ghost_invis = ghost_invis
+        ghost_invis = translate (-100) 0 ghost_invis
     }
     -- play window background 30 state render handleKeys update
 
@@ -157,5 +164,5 @@ main = do
 
     -- display window background (scale 0.2 0.2 sample)
     -- display window white (scale 0.2 0.2 trial)
-    -- display window white (scale 0.2 0.2 land)
+    -- display window background (translate 450 200 $ scale 0.3 0.3 $ color white $ text $ show (score state))
     play window background 10 tempState (render pics) handleKeys update
