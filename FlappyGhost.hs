@@ -38,17 +38,14 @@ window = InWindow "FlappyGhost" (800, 400) (50, 50)
 background :: Color
 background = black
 
-
--- temp place holder
-drawing :: Picture
-drawing = circle 80
-
-
 {-
 Render
 takes the state and make the viasuals
 -}
 -- render:: _____ -> Picture
+-- temp render
+-- render::GameState -> Picture
+-- render = 
 
 
 {-
@@ -63,6 +60,48 @@ takes the keystroke, the state, and updates the state
 {-
 The function that changes the world after each iteration
 -}
+
+-- =======================
+-- temp place holders
+-- to mock the game and make sure things work
+drawing :: Picture
+drawing = Pictures [translate (-100) (-100) $ color blue $ rectangleSolid 80 200, 
+                    translate (100) (-100) $ color white $ rectangleSolid 80 200]
+
+tempRender state = Pictures (trHelper (world state) [] 0)
+
+trHelper:: String -> [Picture] -> Float -> [Picture]
+trHelper [] [] x = []
+trHelper [] ps x = ps
+trHelper (h:t) ps x
+    | h == 'E' = 
+        trHelper t ((translate (-400 + (x * 100)) (-100) $ color blue $ rectangleSolid 80 200):ps) (x+1)
+    | otherwise = 
+        trHelper t ((translate (-400 + (x * 100)) (-100) $ color white $ rectangleSolid 80 200):ps) (x+1)
+
+tempHK event state = state
+
+tempUpdate f state = GameState {
+    world = tuHelper (world state) [] 0,
+    ghost = True,
+    score = 0,
+    alive = True
+}
+    
+
+tuHelper [] ns x = "E"
+tuHelper (h:t) ns x
+    |x == 0 = tuHelper t ns (x+1)
+    |otherwise = h:(tuHelper t ns x)
+
+tempState = GameState {
+    world = "EEEEEEEEEW",
+    ghost = True,
+    score = 0,
+    alive = True
+}
+-- ========================
+
 
 
 {-
@@ -79,4 +118,8 @@ main = do
         alive = True
    }
 
+    -- display window background drawing
     -- play window background 30 state render handleKeys update
+
+    -- moack
+    play window background 10 tempState tempRender tempHK tempUpdate
