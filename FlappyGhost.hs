@@ -2,15 +2,14 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
 
 
--- Initialize an empty world
--- world is an array of cells
--- parameter is the number of cells
+-- makes a world of e cells
 -- a cell is a character that's either
 -- E: empty, W: wall, L: light
 makeWorld::Int -> String -> String
 makeWorld 0 s = s;
 makeWorld x s = makeWorld (x-1) ('E':s)
 
+-- Structs
 {-
 GameState is a struct of world, ghost, score, alive
 ghost is whether the ghost is invisible or not
@@ -24,13 +23,7 @@ data GameState = GameState {
     alive::Bool
 }
 
-window :: Display
-window = InWindow "FlappyGhost" (800, 400) (50, 50)
-
-background :: Color
-background = black
-
-
+-- pics is just so images can be accessed easier in render
 data Pics = Pics{
     land::Picture,
     wall::Picture,
@@ -39,6 +32,15 @@ data Pics = Pics{
     ghost_lit::Picture,
     ghost_invis::Picture
 }
+
+window :: Display
+window = InWindow "FlappyGhost" (1000, 504) (50, 50)
+
+background :: Color
+background = black
+
+
+
 
 gameOver::Picture
 gameOver = translate (-300) 0 $ color white $ text "GameOver"
@@ -60,9 +62,9 @@ render pics state
 renderHelper:: Pics -> [Picture] -> String -> Float -> [Picture]
 renderHelper pics ps [] x = ps
 renderHelper pics ps (h:t) x
-    | x == -1 = (translate 0 (-150) (land pics)):(renderHelper pics ps t (x+1))
+    | x == -1 = (land pics):(renderHelper pics ps t (x+1))
     | h == 'W' = 
-        (translate (-400 + (x * 50)) (-100) (wall pics)):(renderHelper pics ps t (x+1))
+        (translate (-400 + (x * 50)) 0 (wall pics)):(renderHelper pics ps t (x+1))
     | h == 'L' =
          (translate (-400 + (x * 50)) 0 (lamp pics)):(renderHelper pics ps t (x+1))
     |otherwise = renderHelper pics ps t (x+1)
@@ -151,12 +153,12 @@ main = do
         alive = True
     }
     let pics = Pics {
-        land = scale 0.3 0.2 land,
-        wall = scale 0.2 0.5 wall,
-        lamp = scale 0.9 0.9 light,
-        ghost_norm = scale 0.75 0.75 ghost_norm,
-        ghost_lit = scale 0.5 0.5 ghost_lit,
-        ghost_invis = scale 0.5 0.5 ghost_invis
+        land = scale 1 1.5 land,
+        wall = scale 1 1.5 wall,
+        lamp = scale 1 1.5 light,
+        ghost_norm = ghost_norm,
+        ghost_lit = ghost_lit,
+        ghost_invis = ghost_invis
     }
     -- play window background 30 state render handleKeys update
 
@@ -166,4 +168,4 @@ main = do
     -- display window background (scale 0.2 0.2 sample)
     -- display window white (scale 0.2 0.2 trial)
     -- display window white (scale 0.2 0.2 land)
-    play window background 10 tempState (render pics) tempHK tempUpdate
+    play window background 8 tempState (render pics) tempHK tempUpdate
