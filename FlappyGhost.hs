@@ -10,15 +10,6 @@ makeWorld::Int -> String -> String
 makeWorld 0 s = s;
 makeWorld x s = makeWorld (x-1) ('E':s)
 
-
--- nextWorld
-{- 
-make the next frame of the world
-reads the old world to see what is permited to add as the next cell
-(random number generator?)
--}
--- nextWorld:: String -> String
-
 {-
 GameState is a struct of world, ghost, score, alive
 ghost is whether the ghost is invisible or not
