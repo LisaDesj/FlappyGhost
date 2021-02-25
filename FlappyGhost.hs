@@ -46,7 +46,7 @@ takes the keystroke, the state, and updates the state
 -}
 -- handleKeys Event -> GameState -> GameState
 handleKeys (EventKey k _ _ _) gs
-    | SpecialKey KeyDown <- k   = gs{ ghost = False }
+    | SpecialKey KeyDown <- k   = gs{ ghost = not (ghost gs) }
     | otherwise = gs
 --TO DO: Add timer
 
