@@ -122,7 +122,6 @@ updateAlive (h:t) ghost count
     | count > 14 = True
     | h == 'W' && ghost = True && (updateAlive t ghost (count+1))
     | h == 'W' = False
-    -- | h == 'L' && ghost = False
     | otherwise = True && (updateAlive t ghost (count+1))
 
 updateScore::String -> Int -> Int -> Int
@@ -133,17 +132,20 @@ updateScore (h:t) count score
     |otherwise = score
 
 updateWorld::String -> Int -> String
-updateWorld [] x = 
-    if 
-        (x > 50)
-    then
-        []
-    else
-        generateWorld 30 1 23 1 6
+updateWorld [] x
+    |x > 50 = []
+    |otherwise = generateWorld 30 1 (randomGen 18 27) 2 (randomGen 5 11)
 
 updateWorld (h:t) count
     |count == 0 = updateWorld t (count+1)
     |otherwise = h:(updateWorld t (count+1))
+
+-- generator::StdGen
+-- generator = mkStdGen 107
+
+-- Generated 
+randomGen::Int -> Int -> Int
+randomGen x y = fst (randomR (x, y) (mkStdGen 107))
 
 
 -- total: the length
