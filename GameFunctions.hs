@@ -17,7 +17,7 @@ makeWorld x s = makeWorld (x-1) ('E':s)
 {-
 GameState is a struct of world, ghost, score, alive
 ghost is whether the ghost is invisible or not (Invisible = True, Visible = False)
-light is whether the ghost is in light mode or not (light mode = True, Normal = False)
+glit is whether the ghost is in light mode or not (light mode = True, Normal = False)
 score is the number of walls passes
 alive is whether not not the player is alive
 -}
