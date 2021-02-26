@@ -17,12 +17,14 @@ makeWorld x s = makeWorld (x-1) ('E':s)
 {-
 GameState is a struct of world, ghost, score, alive
 ghost is whether the ghost is invisible or not (Invisible = True, Visible = False)
+glit is whether the ghost is in light mode or not (light mode = True, Normal = False)
 score is the number of walls passes
 alive is whether not not the player is alive
 -}
 data GameState = GameState {
     world::String,
     ghost::Bool,
+    glit::Bool,
     score::Int,
     alive::Bool,
     fade::Int
@@ -56,8 +58,10 @@ gameOver score = Pictures
 -- 40 (25 pix width) cells on screen at a time
 render:: Pics -> GameState -> Picture
 render pics state
-    | (alive state) && (ghost state) = 
+    | (alive state) && (ghost state) && not(glit state) = 
         renderGame pics state (ghost_invis pics)
+    | (alive state) && (glit state) && not(ghost state) =
+        renderGame pics state (ghost_lit pics)
     | (alive state) =
         renderGame pics state (ghost_norm pics)
     | otherwise = gameOver $ show (score state)     
@@ -88,7 +92,8 @@ takes the keystroke, the state, and updates the state
 -}
 handleKeys:: Event -> GameState -> GameState
 handleKeys (EventKey k ks _ _) gs
-    | SpecialKey KeySpace <- k = gs{ ghost = True, fade = 3}
+    | SpecialKey KeyDown <- k = gs{ ghost = True, glit = False, fade = 3}
+    | SpecialKey KeyUp <- k = gs{ ghost = False, glit = True, fade = 3}
     | otherwise = gs
 handleKeys _ gs = gs
 
@@ -107,14 +112,15 @@ update f state =
         -- world = uHelper (world state) [] 0,
         world = updateWorld (world state) 0,
         ghost = if (fade state == 0) then False else True,
+        glit = if (fade state == 0) then False else True,
         score = updateScore (world state) 0 (score state),
-        alive = updateAlive (world state) (ghost state) 0,
+        alive = updateAlive (world state) (ghost state) (glit state) 0,
         fade = if (fade state > 0) then (fade state) - 1 else 0
         }
     else
         state
 
-updateAlive::String -> Bool -> Int -> Bool
+{- updateAlive::String -> Bool -> Int -> Bool
 updateAlive [] ghost count = True
 updateAlive (h:t) ghost count
     | count > 7 && count < 15 && h == 'L' && ghost = False
@@ -122,7 +128,21 @@ updateAlive (h:t) ghost count
     | count > 14 = True
     | h == 'W' && ghost = True && (updateAlive t ghost (count+1))
     | h == 'W' = False
-    | otherwise = True && (updateAlive t ghost (count+1))
+    | otherwise = True && (updateAlive t ghost (count+1)) -}
+
+updateAlive::String -> Bool -> Bool -> Int -> Bool
+updateAlive [] ghost glit count = True
+updateAlive (h:t) ghost glit count
+    | count > 7 && count < 15 && h == 'L' && glit     = True
+    | count < 8                                       = True && (updateAlive t ghost glit (count+1))
+    | count > 14                                      = True
+    | h == 'W' && ghost                               = True && (updateAlive t ghost glit (count+1))
+    | h == 'W'                                        = False
+    | h == 'L' && glit                                = True && (updateAlive t ghost glit (count+1))
+    | h == 'L'                                        = False
+    | otherwise                                       = True && (updateAlive t ghost glit (count+1))
+
+
 
 updateScore::String -> Int -> Int -> Int
 updateScore [] count score = score
