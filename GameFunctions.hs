@@ -3,7 +3,6 @@ module GameFunctions where
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
 import Graphics.Gloss.Data.Point
-import System.Random
 
 -- makes a world of e cells
 -- a cell is a character that's either
