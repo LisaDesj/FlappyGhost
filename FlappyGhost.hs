@@ -12,7 +12,7 @@ drawing = Pictures [translate (-100) (-100) $ color blue $ rectangleSolid 80 200
                     translate (100) (-100) $ color white $ rectangleSolid 80 200]
 
 tempState = GameState {
-    world = "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEWEEEEEEEEEEEEELEEEEEEEEEEEEEWEEEEEEEEEEEE",
+    world = "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEWEEEEEEEEEEEEEEEEEEEEEEEELEEEEEEEEEEEEEWEEEEEEEEEEEE",
     ghost = False,
     score = 0,
     alive = True,
@@ -63,4 +63,4 @@ main = do
     -- display window background (scale 0.2 0.2 sample)
     -- display window white (scale 0.2 0.2 trial)
     -- display window background (translate 450 200 $ scale 0.3 0.3 $ color white $ text $ show (score state))
-    play window background 20 tempState (render pics) handleKeys update
+    play window background 5 tempState (render pics) handleKeys update

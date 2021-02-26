@@ -88,7 +88,7 @@ takes the keystroke, the state, and updates the state
 -}
 handleKeys:: Event -> GameState -> GameState
 handleKeys (EventKey k ks _ _) gs
-    | SpecialKey KeySpace <- k = gs{ ghost = True, fade = 5}
+    | SpecialKey KeySpace <- k = gs{ ghost = True, fade = 3}
     | otherwise = gs
 handleKeys _ gs = gs
 
@@ -104,7 +104,8 @@ update f state =
         (alive state)
     then 
         GameState {
-        world = uHelper (world state) [] 0,
+        -- world = uHelper (world state) [] 0,
+        world = updateWorld (world state) 0,
         ghost = if (fade state == 0) then False else True,
         score = updateScore (world state) 0 (score state),
         alive = updateAlive (world state) (ghost state) 0,
@@ -112,11 +113,6 @@ update f state =
         }
     else
         state
-
-uHelper [] ns x = "E"
-uHelper (h:t) ns x
-    |x == 0 = uHelper t ns (x+1)
-    |otherwise = h:(uHelper t ns x)
 
 updateAlive::String -> Bool -> Int -> Bool
 updateAlive [] ghost count = True
@@ -135,3 +131,31 @@ updateScore (h:t) count score
     |count < 13 = updateScore t (count+1) score
     |count == 13 && h == 'W' = score + 1
     |otherwise = score
+
+updateWorld::String -> Int -> String
+updateWorld [] x = 
+    if 
+        (x > 50)
+    then
+        []
+    else
+        generateWorld 30 1 23 1 6
+
+updateWorld (h:t) count
+    |count == 0 = updateWorld t (count+1)
+    |otherwise = h:(updateWorld t (count+1))
+
+
+-- total: the length
+-- t1: type of the first special cell (1: W, 2: L)
+-- loc1: location of the first speical cell [18,27]
+-- t2: type of the second speical cell
+-- loc2: location of the second speical cell [5, 11]
+generateWorld::Int -> Int -> Int -> Int -> Int -> String
+generateWorld total t1 loc1 t2 loc2
+    |total == 0 = "E"
+    |(total == loc1 && t1 == 1) || (total == loc2 && t2 == 1) = 
+        'W':(generateWorld (total-1) t1 loc1 t2 loc2)
+    |(total == loc1 && t1 == 2) || (total == loc2 && t2 == 2) = 
+        'L':(generateWorld (total-1) t1 loc1 t2 loc2)
+    |otherwise = 'E':(generateWorld (total-1) t1 loc1 t2 loc2)
