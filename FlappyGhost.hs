@@ -14,6 +14,7 @@ drawing = Pictures [translate (-100) (-100) $ color blue $ rectangleSolid 80 200
 tempState = GameState {
     world = "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEWEEEEEEEEEEEEEEEEEEEEEEEELEEEEEEEEEEEEEWEEEEEEEEEEEE",
     ghost = False,
+    glit = False,
     score = 0,
     alive = True,
     fade = 0
@@ -41,6 +42,7 @@ main = do
     let state = GameState {
         world = wd,
         ghost = False,
+        glit  = False,
         score = 0,
         alive = True,
         fade = 0
@@ -52,7 +54,7 @@ main = do
         wall = scale 0.91 1.5 wall,
         lamp = scale 1.14 1.5 light,
         ghost_norm = translate (-175) 0 $ scale 0.714 0.714 ghost_norm,
-        ghost_lit = ghost_lit,
+        ghost_lit = translate (-175) 0 $ scale 0.714 0.714 ghost_lit,
         ghost_invis = translate (-175) 0 $ scale 0.714 0.714 ghost_invis
     }
     -- play window background 30 state render handleKeys update
@@ -63,4 +65,4 @@ main = do
     -- display window background (scale 0.2 0.2 sample)
     -- display window white (scale 0.2 0.2 trial)
     -- display window background (translate 450 200 $ scale 0.3 0.3 $ color white $ text $ show (score state))
-    play window background 20 tempState (render pics) handleKeys update
+    play window background 8 tempState (render pics) handleKeys update
