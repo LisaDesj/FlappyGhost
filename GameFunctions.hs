@@ -109,8 +109,7 @@ update f state =
         (alive state)
     then 
         GameState {
-        -- world = uHelper (world state) [] 0,
-        world = updateWorld (world state) 0,
+        world = updateWorld (world state) 0 state,
         ghost = if (fade state == 0) then False else True,
         glit = if (fade state == 0) then False else True,
         score = updateScore (world state) 0 (score state),
@@ -120,27 +119,18 @@ update f state =
     else
         state
 
-{- updateAlive::String -> Bool -> Int -> Bool
-updateAlive [] ghost count = True
-updateAlive (h:t) ghost count
-    | count > 7 && count < 15 && h == 'L' && ghost = False
-    | count < 8 = True && (updateAlive t ghost (count+1))
-    | count > 14 = True
-    | h == 'W' && ghost = True && (updateAlive t ghost (count+1))
-    | h == 'W' = False
-    | otherwise = True && (updateAlive t ghost (count+1)) -}
 
 updateAlive::String -> Bool -> Bool -> Int -> Bool
 updateAlive [] ghost glit count = True
 updateAlive (h:t) ghost glit count
-    | count > 7 && count < 15 && h == 'L' && glit     = True
-    | count < 8                                       = True && (updateAlive t ghost glit (count+1))
-    | count > 14                                      = True
-    | h == 'W' && ghost                               = True && (updateAlive t ghost glit (count+1))
-    | h == 'W'                                        = False
-    | h == 'L' && glit                                = True && (updateAlive t ghost glit (count+1))
-    | h == 'L'                                        = False
-    | otherwise                                       = True && (updateAlive t ghost glit (count+1))
+    | count > 7 && count < 15 && h == 'L' && glit = True
+    | count < 8 = True && (updateAlive t ghost glit (count+1))
+    | count > 14 = True
+    | h == 'W' && ghost = True && (updateAlive t ghost glit (count+1))
+    | h == 'W' = False
+    | h == 'L' && glit = True && (updateAlive t ghost glit (count+1))
+    | h == 'L' = False
+    | otherwise = True && (updateAlive t ghost glit (count+1))
 
 
 
@@ -148,36 +138,46 @@ updateScore::String -> Int -> Int -> Int
 updateScore [] count score = score
 updateScore (h:t) count score
     |count < 13 = updateScore t (count+1) score
-    |count == 13 && h == 'W' = score + 1
+    |count == 13 && (h == 'W'|| h == 'L') = score + 1
     |otherwise = score
 
-updateWorld::String -> Int -> String
-updateWorld [] x
+
+updateWorld::String -> Int -> GameState -> String
+updateWorld [] x state
     |x > 50 = []
-    |otherwise = generateWorld 30 1 (randomGen 18 27) 2 (randomGen 5 11)
+    |otherwise = generateWorld 30 18 27 5 11 state
 
-updateWorld (h:t) count
-    |count == 0 = updateWorld t (count+1)
-    |otherwise = h:(updateWorld t (count+1))
+updateWorld (h:t) count state
+    |count == 0 = updateWorld t (count+1) state
+    |otherwise = h:(updateWorld t (count+1)) state
 
--- generator::StdGen
--- generator = mkStdGen 107
+{- rando selects an integer from x to y, based on the score of the state.-}
+rando::Int -> Int -> GameState -> Int
+rando x y state = [x..y]!!(randoIndex x y state)
 
--- Generated 
-randomGen::Int -> Int -> Int
-randomGen x y = fst (randomR (x, y) (mkStdGen 107))
+{- randoIndex gives an index of the list [x..y] determined by the score of the state.-}
+randoIndex::Int -> Int -> GameState -> Int
+randoIndex x y state = mod (score state) (listLength x y)
 
+{- listLength makes a list from x to y and returns the length.-}
+listLength::Int -> Int -> Int
+listLength x y = length[x..y]
 
 -- total: the length
--- t1: type of the first special cell (1: W, 2: L)
--- loc1: location of the first speical cell [18,27]
--- t2: type of the second speical cell
--- loc2: location of the second speical cell [5, 11]
-generateWorld::Int -> Int -> Int -> Int -> Int -> String
-generateWorld total t1 loc1 t2 loc2
+-- x1: lower bound of location of wall
+-- x2: upper bound of location of wall
+-- y3: lower bound of location of lamp
+-- y4: upper bound of loaction of lamp
+generateWorld::Int -> Int -> Int -> Int -> Int -> GameState -> String
+generateWorld total x1 x2 y1 y2 state
     |total == 0 = "E"
-    |(total == loc1 && t1 == 1) || (total == loc2 && t2 == 1) = 
-        'W':(generateWorld (total-1) t1 loc1 t2 loc2)
-    |(total == loc1 && t1 == 2) || (total == loc2 && t2 == 2) = 
-        'L':(generateWorld (total-1) t1 loc1 t2 loc2)
-    |otherwise = 'E':(generateWorld (total-1) t1 loc1 t2 loc2)
+    |(total == x) = 
+        'W':(generateWorld (total-1) x1 x2 y1 y2 state)  
+    |(total == y) =
+        'L':(generateWorld (total-1) x1 x2 y1 y2 state)
+    |otherwise = 'E':(generateWorld (total-1) x1 x2 y1 y2 state)
+    where
+        x = rando x1 x2 state
+        y = rando y1 y2 state
+
+
