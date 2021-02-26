@@ -1,7 +1,6 @@
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
 import Graphics.Gloss.Data.Point
-import System.Random
 import GameFunctions
 
 -- =======================
